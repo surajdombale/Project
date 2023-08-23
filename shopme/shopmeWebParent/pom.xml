@@ -1,0 +1,27 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.shopme</groupId>
+		<artifactId>shopme</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+	<artifactId>shopmeWebParent</artifactId>
+	<name>shopmeWebParent</name>
+	<description>this is web parent project</description>
+	<packaging>pom</packaging>
+	<modules>
+		<module>shopmeBackEnd</module>
+		<module>shopmeFrontEnd</module>
+	</modules>
+	<dependencies>
+		<!-- https://mvnrepository.com/artifact/org.springframework/spring-web -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+			<version>6.0.6</version>
+		</dependency>
+
+	</dependencies>
+</project>
