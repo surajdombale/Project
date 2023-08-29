@@ -12,5 +12,22 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
+	<dependencies>
+		<!-- https://mvnrepository.com/artifact/org.springframework/spring-web -->
+		<!--
+		https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+			<version>3.1.2</version>
+		</dependency>
+		<dependency>
+			<groupId>com.shopme</groupId>
+			 <artifactId>shopmeCommon</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
+	</dependencies>
 
 </project>
+
