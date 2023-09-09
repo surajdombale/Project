@@ -121,8 +121,16 @@ public class CategorySvcImpl implements CategorySvc {
 	}
 
 	@Override
-	public void enable(Integer id, Integer parentid) {
-		com.shopme.entity.SubCategory sub1;
+	public void enable(Integer id) {
+		Integer parentid = null;
+		com.shopme.entity.SubCategory sub1 = subCategoryRepo.findById(id).get();
+		List<com.shopme.entity.Category> single1 = new ArrayList<com.shopme.entity.Category>();
+		single1 = categoryRepo.findAll();
+		for (com.shopme.entity.Category a : single1) {
+			if (a.getName().contains(sub1.parentName)) {
+				parentid = a.getId();
+			}
+		}
 		com.shopme.entity.Category single = categoryRepo.findById(parentid).get();
 		List<com.shopme.entity.SubCategory> sublist = new ArrayList<com.shopme.entity.SubCategory>();
 		for (com.shopme.entity.SubCategory c : single.getSubcategory()) {

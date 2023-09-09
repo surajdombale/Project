@@ -96,9 +96,10 @@ public class CategoryController {
 		return categorysvc.delete(id);
 	}
 
-	@PostMapping("/enabled")
-	public void enableCstegory(@RequestParam("parentid") final Integer parentid, @RequestParam("id") final Integer id) {
-		categorysvc.enable(id, parentid);
+	@PostMapping("/enabled/{id}")
+	public void enableCstegory(@PathVariable int id) {
+		System.out.println(id);
+		categorysvc.enable(id);
 	}
 
 }

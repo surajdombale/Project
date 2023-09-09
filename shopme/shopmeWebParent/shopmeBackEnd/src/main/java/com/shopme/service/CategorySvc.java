@@ -20,7 +20,7 @@ public interface CategorySvc {
 
 	public boolean delete(Integer id);
 
-	public void enable(Integer id, Integer parentId);
+	public void enable(Integer id);
 
 	public List<SubCategory> getAllSub();
 }
