@@ -6,7 +6,7 @@ import com.shopme.model.Category;
 import com.shopme.model.SubCategory;
 
 public interface CategorySvc {
-	public boolean addSub(Integer id, SubCategory subCategory);
+	public Integer addSub(String parentName, SubCategory subCategory);
 
 	public boolean add(Category category, SubCategory subCategory);
 
@@ -16,11 +16,15 @@ public interface CategorySvc {
 
 	public byte[] getImageById(int id);
 
-	public boolean edit(Category category);
+	public boolean edit(SubCategory subCategory);
 
 	public boolean delete(Integer id);
 
-	public void enable(Integer id);
+	public boolean enable(Integer id);
 
 	public List<SubCategory> getAllSub();
+
+	public SubCategory getById(Integer id);
+
+	public boolean editWithoutPhoto(SubCategory subCategory);
 }

@@ -62,11 +62,65 @@ public class CategorySvcImpl implements CategorySvc {
 	}
 
 	@Override
-	public boolean edit(Category category) {
-
+	public boolean edit(SubCategory subcategory) {
+		boolean repeat = true;
+		int lastCatId = 0;
+		int id = 0;
 		boolean result = false;
-		if (categoryRepo.existsById(category.getId())) {
-//			com.shopme.entity.Category c = categoryRepo.findById(category.getId()).get();
+		if (subCategoryRepo.existsById(subcategory.getId())) {
+
+			List<com.shopme.entity.Category> categoryList = categoryRepo.findAll();
+			for (com.shopme.entity.Category i : categoryList) {
+				lastCatId = i.getId();
+				System.out.println(i.getName() + " " + subcategory.getParentName() + "" + lastCatId);
+				if (i.getName().contentEquals(subcategory.getParentName())) {
+					System.out.println("in if");
+					id = i.getId();
+					repeat = false;
+				}
+			}
+
+			if (repeat) {
+				result = true;
+				System.out.println("in new");
+				List<com.shopme.entity.SubCategory> sublist = new ArrayList<com.shopme.entity.SubCategory>();
+				com.shopme.entity.SubCategory subobj = new com.shopme.entity.SubCategory(subcategory.getId(),
+						subcategory.getImage(), subcategory.getName(), subcategory.getAlias(),
+						subcategory.getParentName(), subcategory.isEnabled());
+				sublist.add(subobj);
+				com.shopme.entity.Category cat = new com.shopme.entity.Category(lastCatId + 1,
+						subcategory.getParentName(), subcategory.getParentName(), sublist);
+				try {
+					subCategoryRepo.deleteById(subcategory.getId());
+					categoryRepo.save(cat);
+				} catch (Exception e) {
+					result = false;
+					e.printStackTrace();
+				}
+
+			} else {
+				result = true;
+				subCategoryRepo.deleteById(subcategory.getId());
+				System.out.println("in exist");
+				com.shopme.entity.Category single = categoryRepo.findById(id).get();
+				List<com.shopme.entity.SubCategory> sublist = new ArrayList<com.shopme.entity.SubCategory>();
+				for (com.shopme.entity.SubCategory c : single.getSubcategory()) {
+					sublist.add(c);
+				}
+
+				com.shopme.entity.SubCategory subobj = new com.shopme.entity.SubCategory(subcategory.getId(),
+						subcategory.getImage(), subcategory.getName(), subcategory.getAlias(), single.getName(),
+						subcategory.isEnabled());
+				sublist.add(subobj);
+				com.shopme.entity.Category category = new com.shopme.entity.Category(id, single.getName(),
+						single.getAlias(), sublist);
+				try {
+					categoryRepo.saveAndFlush(category);
+				} catch (Exception e) {
+					result = false;
+					e.printStackTrace();
+				}
+			}
 
 		}
 		return result;
@@ -85,32 +139,73 @@ public class CategorySvcImpl implements CategorySvc {
 	}
 
 	@Override
-	public boolean addSub(Integer id, com.shopme.model.SubCategory subcategory) {
-		boolean result = true;
-		Integer lastSubId = null;
+	public Integer addSub(String parentName, com.shopme.model.SubCategory subcategory) {
+
+		boolean repeat = true;
+		int lastSubId = 1;
+		int lastCatId = 1;
+		int id = 0;
+		System.out.println("fffff");
 		List<com.shopme.entity.SubCategory> entitylist = subCategoryRepo.findAll();
+
 		for (com.shopme.entity.SubCategory c : entitylist) {
-			lastSubId = c.getId();
+			lastSubId = c.getId() + 1;
+			System.out.println(c.getName() + " " + subcategory.getName() + " " + lastSubId);
+			if (subcategory.getName().contentEquals(c.getName())) {
+				System.out.println("just here");
+				return 0;
+			}
 		}
-		com.shopme.entity.Category single = categoryRepo.findById(id).get();
-		List<com.shopme.entity.SubCategory> sublist = new ArrayList<com.shopme.entity.SubCategory>();
-		for (com.shopme.entity.SubCategory c : single.getSubcategory()) {
-			sublist.add(c);
-		}
-		lastSubId += 1;
-		com.shopme.entity.SubCategory subobj = new com.shopme.entity.SubCategory(lastSubId, subcategory.getImage(),
-				subcategory.getName(), subcategory.getAlias(), single.getName(), subcategory.isEnabled());
-		sublist.add(subobj);
-		com.shopme.entity.Category category = new com.shopme.entity.Category(id, single.getName(), single.getAlias(),
-				sublist);
-		try {
-			categoryRepo.saveAndFlush(category);
-		} catch (Exception e) {
-			result = false;
-			e.printStackTrace();
+		List<com.shopme.entity.Category> categoryList = categoryRepo.findAll();
+		for (com.shopme.entity.Category i : categoryList) {
+			lastCatId = i.getId()+1;
+			System.out.println(i.getName() + " " + parentName + "" + lastCatId);
+			if (i.getName().contentEquals(parentName)) {
+				System.out.println("in if");
+				id = i.getId();
+				repeat = false;
+			}
 		}
 
-		return result;
+		if (repeat) {
+			System.out.println("in new");
+			List<com.shopme.entity.SubCategory> sublist = new ArrayList<com.shopme.entity.SubCategory>();
+			com.shopme.entity.SubCategory subobj = new com.shopme.entity.SubCategory(lastSubId, subcategory.getImage(),
+					subcategory.getName(), subcategory.getAlias(), parentName, subcategory.isEnabled());
+			sublist.add(subobj);
+			com.shopme.entity.Category cat = new com.shopme.entity.Category(lastCatId, parentName, parentName,
+					sublist);
+			try {
+				categoryRepo.save(cat);
+			} catch (Exception e) {
+				lastSubId = 0;
+				e.printStackTrace();
+			}
+
+		} else {
+
+			System.out.println("in exist");
+			com.shopme.entity.Category single = categoryRepo.findById(id).get();
+			List<com.shopme.entity.SubCategory> sublist = new ArrayList<com.shopme.entity.SubCategory>();
+			for (com.shopme.entity.SubCategory c : single.getSubcategory()) {
+				sublist.add(c);
+			}
+
+			com.shopme.entity.SubCategory subobj = new com.shopme.entity.SubCategory(lastSubId, subcategory.getImage(),
+					subcategory.getName(), subcategory.getAlias(), single.getName(), subcategory.isEnabled());
+			sublist.add(subobj);
+			com.shopme.entity.Category category = new com.shopme.entity.Category(id, single.getName(),
+					single.getAlias(), sublist);
+			try {
+				categoryRepo.saveAndFlush(category);
+			} catch (Exception e) {
+				lastSubId = 0;
+				e.printStackTrace();
+
+			}
+
+		}
+		return lastSubId;
 	}
 
 	@Override
@@ -121,8 +216,9 @@ public class CategorySvcImpl implements CategorySvc {
 	}
 
 	@Override
-	public void enable(Integer id) {
+	public boolean enable(Integer id) {
 		Integer parentid = null;
+		boolean result = false;
 		com.shopme.entity.SubCategory sub1 = subCategoryRepo.findById(id).get();
 		List<com.shopme.entity.Category> single1 = new ArrayList<com.shopme.entity.Category>();
 		single1 = categoryRepo.findAll();
@@ -138,6 +234,7 @@ public class CategorySvcImpl implements CategorySvc {
 				sub1 = new com.shopme.entity.SubCategory(c.getId(), c.getImage(), c.getName(), c.getAlias(),
 						c.getParentName(), c.isEnabled());
 			} else {
+				result = !c.isEnabled();
 				sub1 = new com.shopme.entity.SubCategory(c.getId(), c.getImage(), c.getName(), c.getAlias(),
 						c.getParentName(), !c.isEnabled());
 			}
@@ -147,6 +244,7 @@ public class CategorySvcImpl implements CategorySvc {
 		com.shopme.entity.Category category = new com.shopme.entity.Category(parentid, single.getName(),
 				single.getAlias(), sublist);
 		categoryRepo.saveAndFlush(category);
+		return result;
 	}
 
 	@Override
@@ -160,6 +258,79 @@ public class CategorySvcImpl implements CategorySvc {
 
 		return modellist;
 
+	}
+
+	@Override
+	public SubCategory getById(Integer id) {
+		com.shopme.entity.SubCategory c = subCategoryRepo.findById(id).get();
+		SubCategory cat = new SubCategory(c.getId(), c.getName(), c.getAlias(), c.isEnabled(), c.getParentName());
+		return cat;
+	}
+
+	@Override
+	public boolean editWithoutPhoto(SubCategory subcategory) {
+		boolean repeat = true;
+		int lastCatId = 0;
+		int id = 0;
+		boolean result = false;
+		if (subCategoryRepo.existsById(subcategory.getId())) {
+			com.shopme.entity.SubCategory sub = subCategoryRepo.findById(subcategory.getId()).get();
+			
+			List<com.shopme.entity.Category> categoryList = categoryRepo.findAll();
+			for (com.shopme.entity.Category i : categoryList) {
+				lastCatId = i.getId();
+				System.out.println(i.getName() + " " + subcategory.getParentName() + "" + lastCatId);
+				if (i.getName().contentEquals(subcategory.getParentName())) {
+					System.out.println("in if");
+					id = i.getId();
+					repeat = false;
+				}
+			}
+
+			if (repeat) {
+				result = true;
+				System.out.println("in new");
+				List<com.shopme.entity.SubCategory> sublist = new ArrayList<com.shopme.entity.SubCategory>();
+				com.shopme.entity.SubCategory subobj = new com.shopme.entity.SubCategory(subcategory.getId(),
+						sub.getImage(), subcategory.getName(), subcategory.getAlias(), subcategory.getParentName(),
+						subcategory.isEnabled());
+				sublist.add(subobj);
+				com.shopme.entity.Category cat = new com.shopme.entity.Category(lastCatId + 1,
+						subcategory.getParentName(), subcategory.getParentName(), sublist);
+				try {
+					subCategoryRepo.deleteById(subcategory.getId());
+					categoryRepo.saveAndFlush(cat);
+				} catch (Exception e) {
+					result = false;
+					e.printStackTrace();
+				}
+
+			} else {
+				result = true;
+				subCategoryRepo.deleteById(subcategory.getId());
+				System.out.println("in exist");
+				com.shopme.entity.Category single = categoryRepo.findById(id).get();
+				List<com.shopme.entity.SubCategory> sublist = new ArrayList<com.shopme.entity.SubCategory>();
+				for (com.shopme.entity.SubCategory c : single.getSubcategory()) {
+					sublist.add(c);
+				}
+
+				com.shopme.entity.SubCategory subobj = new com.shopme.entity.SubCategory(subcategory.getId(),
+						sub.getImage(), subcategory.getName(), subcategory.getAlias(), single.getName(),
+						subcategory.isEnabled());
+				sublist.add(subobj);
+				com.shopme.entity.Category category = new com.shopme.entity.Category(id, single.getName(),
+						single.getAlias(), sublist);
+				try {
+					categoryRepo.saveAndFlush(category);
+				} catch (Exception e) {
+					result = false;
+					e.printStackTrace();
+				}
+			}
+
+		}
+		return result;
 	}
 
 }

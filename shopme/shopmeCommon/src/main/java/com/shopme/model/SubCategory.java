@@ -2,6 +2,12 @@ package com.shopme.model;
 
 
 public class SubCategory {
+public String getParentName() {
+		return parentName;
+	}
+	public void setParentName(String parentName) {
+		this.parentName = parentName;
+	}
 private Integer id;
 private byte[] image;
 private String name;
@@ -45,6 +51,15 @@ public SubCategory(byte[] image, String name, String alias, boolean enabled) {
 	this.name = name;
 	this.alias = alias;
 	this.enabled = enabled;
+}
+public SubCategory(Integer id, byte[] image, String name, String alias, boolean enabled, String parentName) {
+	super();
+	this.id = id;
+	this.image = image;
+	this.name = name;
+	this.alias = alias;
+	this.enabled = enabled;
+	this.parentName = parentName;
 }
 public Integer getId() {
 	return id;

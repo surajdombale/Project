@@ -34,13 +34,16 @@ public class CategoryController {
 	}
 
 	@PostMapping("/newsub")
-	public boolean createSubCategory(@RequestParam("id") final Integer parentid,
+	public Integer createSubCategory(@RequestParam("parentName") final String parentName,
 			@RequestParam("name") final String name, @RequestParam("alias") final String alias,
-			@RequestParam("enabled") final boolean enabled, final @RequestParam("file") MultipartFile file)
+			@RequestParam("enabled") final boolean enable, final @RequestParam("file") MultipartFile file)
 			throws IOException {
-		System.out.println(name + " " + parentid + " " + enabled);
-		SubCategory sub = new SubCategory(ImageUtil.compressImage(file.getBytes()), name, alias, enabled);
-		return categorysvc.addSub(parentid, sub);
+
+		System.out.println(enable + " " + alias);
+		System.out.println("i Am here");
+		System.out.println(name + " " + parentName + " " + enable);
+		SubCategory sub = new SubCategory(ImageUtil.compressImage(file.getBytes()), name, name.toLowerCase(), enable);
+		return categorysvc.addSub(parentName, sub);
 
 	}
 
@@ -51,6 +54,7 @@ public class CategoryController {
 			@RequestParam("subcategoryalias") final String subcategoryalias,
 			@RequestParam("enabled") final boolean enabled, final @RequestParam("file") MultipartFile file)
 			throws IOException {
+
 		System.out.println(
 				subcategoryname + " " + subcategoryalias + " " + enabled + " " + categoryname + " " + categoryalias);
 		SubCategory sub = new SubCategory(ImageUtil.compressImage(file.getBytes()), subcategoryname, subcategoryalias,
@@ -66,12 +70,6 @@ public class CategoryController {
 
 	}
 
-//	@GetMapping("{id}")
-//	public Category getCategory(@PathVariable int id) {
-//		System.out.println("in controller get");
-//		return categorysvc.get(id);
-//	}
-
 	@GetMapping("/download/{id}")
 	public ResponseEntity<byte[]> downloadImage(@PathVariable Integer id) {
 		byte[] image = categorysvc.getImageById(id);
@@ -84,10 +82,38 @@ public class CategoryController {
 
 	}
 
-	@PutMapping
-	public boolean editCategory(Category category) {
+	@GetMapping("/getsub/{id}")
+	public SubCategory getById(@PathVariable int id) {
+		System.out.println(id);
+		return categorysvc.getById(id);
+
+	}
+
+	@PutMapping("/editwithoutphoto")
+	public boolean editCategoryWithoutPhoto(@RequestParam("id") final Integer id,
+			@RequestParam("parentName") final String parentName, @RequestParam("name") final String name,
+			@RequestParam("alias") final String alias, @RequestParam("enabled") final boolean enable)
+			throws IOException {
 		System.out.println("in controller edit");
-		return categorysvc.edit(category);
+		System.out.println(enable + " " + alias);
+		System.out.println("i Am in edit photo here");
+		System.out.println(name + " " + parentName + " " + enable);
+		SubCategory sub = new SubCategory(id, name, alias, enable, parentName);
+		return categorysvc.editWithoutPhoto(sub);
+	}
+
+	@PutMapping
+	public boolean editCategory(@RequestParam("id") final Integer id,
+			@RequestParam("parentName") final String parentName, @RequestParam("name") final String name,
+			@RequestParam("alias") final String alias, @RequestParam("enabled") final boolean enable,
+			final @RequestParam("file") MultipartFile file) throws IOException {
+		System.out.println("in controller edit");
+		System.out.println(enable + " " + alias);
+		System.out.println("i Am in edit here");
+		System.out.println(name + " " + parentName + " " + enable);
+		SubCategory sub = new SubCategory(id, ImageUtil.compressImage(file.getBytes()), name, alias, enable,
+				parentName);
+		return categorysvc.edit(sub);
 	}
 
 	@DeleteMapping("{id}")
@@ -97,9 +123,9 @@ public class CategoryController {
 	}
 
 	@PostMapping("/enabled/{id}")
-	public void enableCstegory(@PathVariable int id) {
+	public boolean enableCstegory(@PathVariable int id) {
 		System.out.println(id);
-		categorysvc.enable(id);
+		return categorysvc.enable(id);
 	}
 
 }

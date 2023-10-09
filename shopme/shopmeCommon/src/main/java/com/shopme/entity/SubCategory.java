@@ -22,7 +22,7 @@ public class SubCategory {
 	}
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+//	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	@Lob
 	@Column(length = 52428800)
